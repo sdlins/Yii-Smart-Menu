@@ -33,16 +33,31 @@ class YiiSmartMenu extends CMenu
         return parent::init();
     }
 
-    protected function filterItems($items){
+    /**
+     * Filter recursively the menu items received setting visibility true or
+     * false according to result of the checkAccess() function.
+     *
+     * @param array $items The menu items being filtered.
+     * @return array The menu items with visibility defined by checkAccess().
+     */
+    protected function filterItems(array $items){
         foreach($items as $pos=>$item)
         {
             if(!isset($item['visible']))
             {
+                /**
+                 * Generate auth item name if the option 'authItemName' of menu item
+                 * is not defined.
+                 */
                 if(!isset($item['authItemName']))
                     $authItemName=$this->generateAuthItemNameFromItem($item);
                 else
                     $authItemName=$item['authItemName'];
 
+                /**
+                 * Use $_GET as params if the option 'authParams' of menu item is
+                 * not defined.
+                 */
                 if(!isset($item['authParams']))
                     $params=$_GET;
                 else
@@ -54,6 +69,10 @@ class YiiSmartMenu extends CMenu
                 Yii::trace("Item {$item['label']} is ".($allowedAccess?'':'*not* ')."visible. You have no permissions to $authItemName");
             }
 
+            /**
+             * If current item is visible and has sub items, loops recursively
+             * on them.
+             */
             if(isset($item['items']) && $item['visible'])
                 $item['items']=$this->filterItems($item['items']);
 
@@ -62,6 +81,20 @@ class YiiSmartMenu extends CMenu
         return $items;
     }
 
+    /**
+     * Generate auth item name to be used in checkAccess() function.
+     * The generated auth item name is formed using module name (whether any),
+     * controller id and action id, all of them are extracted of 'url' or 'submit'
+     * options of menu item. If there is no module in 'url'|'submit', just controller
+     * and action are used. If there is no controller too, the current controller
+     * id will be used.
+     *
+     * @param mixed $menu If not array (as '#' or 'http://...' menu items), it will
+     * be returned with no changes. If array, the 'url' or 'submit' options will
+     * be used. If there is no 'url' or 'submit', it will be returned with no changes.
+     *
+     * @return string The auth item name generated.
+     */
     protected function generateAuthItemNameFromItem($menu){
         if(isset($menu['url']) && is_array($menu['url']))
             $url=$menu['url'];
