@@ -1,0 +1,12 @@
+General Information
+
+Auto check permissions to define visibility of any menu item. Works out of the box with Rights Extension. Can be adapted to work in (almost) any enviroment.
+
+Yii Smart Menu iterates through the items received to turn visibility=true|false depending on result of checkAccess() function. The authItemName to be checked is formed by concatenating module (whether any), controller and action defined in url or submit options of your menu's items.
+
+Vantages
+
+   - Out of the box use (with Rights Extension). Easy to use with others or your own authManager;
+   - Less database queries: if a menu item is not accessible due to checkAccess() restrictions, none of its children are checked! In some menus, it could save dozens of queries.
+
+More informatinos on http://www.yiiframework.com/extension/yiismartmenu/
