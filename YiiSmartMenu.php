@@ -54,14 +54,7 @@ class YiiSmartMenu extends CMenu
                 else
                     $authItemName=$item['authItemName'];
 
-                /**
-                 * Use $_GET as params if the option 'authParams' of menu item is
-                 * not defined.
-                 */
-                if(!isset($item['authParams']))
-                    $params=$_GET;
-                else
-                    $params=$item['authParams'];
+                $params=$this->compoundParams($item);
 
                 $allowedAccess = Yii::app()->user->checkAccess($authItemName, $params);
                 $item['visible'] = $allowedAccess;
@@ -141,6 +134,22 @@ class YiiSmartMenu extends CMenu
         }
 
         return implode($this->partItemSeparator, $templateParts);
+    }
+
+    protected function compoundParams($item) {
+        if (isset($item['authParams']))
+            return $item['authParams'];
+        else
+        {
+            /* If item has an url option and it has additional params */
+            if (isset($item['url']) && is_array($item['url']) && count($item['url']) > 1)
+                return array_slice($item['url'], 1, null, true);
+            /* Else if item has an submit option and it has addtionall params */
+            elseif (isset($item['linkOptions']['submit']) && is_array($item['linkOptions']['submit']) && count($item['linkOptions']['submit']) > 1)
+                return array_slice($item['linkOptions']['submit'], 1, null, true);
+            else
+                return $_GET;
+        }
     }
 
     protected function trace($item, $authItemName, $params, $allowedAccess) {
