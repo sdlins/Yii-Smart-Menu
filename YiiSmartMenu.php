@@ -89,19 +89,19 @@ class YiiSmartMenu extends CMenu
      * and action are used. If there is no controller too, the current controller
      * id will be used.
      *
-     * @param mixed $menu If not array (as '#' or 'http://...' menu items), it will
+     * @param mixed $item If not array (as '#' or 'http://...' menu items), it will
      * be returned with no changes. If array, the 'url' or 'submit' options will
      * be used. If there is no 'url' or 'submit', it will be returned with no changes.
      *
      * @return string The auth item name generated.
      */
-    protected function generateAuthItemNameFromItem($menu){
-        if(isset($menu['url']) && is_array($menu['url']))
-            $url=$menu['url'];
-        elseif(isset($menu['linkOptions']['submit']) && is_array($menu['linkOptions']['submit']))
-            $url=$menu['linkOptions']['submit'];
+    protected function generateAuthItemNameFromItem($item){
+        if(isset($item['url']) && is_array($item['url']))
+            $url=$item['url'];
+        elseif(isset($item['linkOptions']['submit']) && is_array($item['linkOptions']['submit']))
+            $url=$item['linkOptions']['submit'];
         else
-            return $menu['url'];
+            return $item['url'];
 
         $templateParts=array();
 
