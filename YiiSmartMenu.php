@@ -66,7 +66,7 @@ class YiiSmartMenu extends CMenu
                 $allowedAccess = Yii::app()->user->checkAccess($authItemName, $params);
                 $item['visible'] = $allowedAccess;
 
-                Yii::trace("Item {$item['label']} is ".($allowedAccess?'':'*not* ')."visible. You have no permissions to $authItemName");
+                $this->trace($item, $authItemName, $params, $allowedAccess);
             }
 
             /**
@@ -141,5 +141,14 @@ class YiiSmartMenu extends CMenu
         }
 
         return implode($this->partItemSeparator, $templateParts);
+    }
+
+    protected function trace($item, $authItemName, $params, $allowedAccess) {
+        $traceMessage = "Item {$item['label']} is " . ($allowedAccess ? '' : '*not* ') . "visible. ";
+        $traceMessage.= "You have " . ($allowedAccess ? '' : 'no ') . "permissions to $authItemName with params:\n";
+        foreach ($params as $name => $value)
+            $traceMessage.="> $name=$value \n";
+
+        Yii::trace($traceMessage, 'YiiSmartMenu');
     }
 }
