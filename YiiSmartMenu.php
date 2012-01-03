@@ -135,7 +135,15 @@ class YiiSmartMenu extends CMenu
         }
     }
 
-
+    /**
+     * Compound the $params to be sent to checkAccess() function.
+     * The params are obtained from "authParams" option and if it is not setted,
+     * YSM try to obtain them from "url" or "submit" options. If it also has no params,
+     * $_GET will be used.
+     *
+     * @param mixed $item The menu item.
+     * @return array The params.
+     */
     protected function compoundParams($item) {
         if (isset($item['authParams']))
             return $item['authParams'];
@@ -152,9 +160,18 @@ class YiiSmartMenu extends CMenu
         }
     }
 
+    /**
+     * Trace useful informations.
+     *
+     * @param mixed $item
+     * @param string $authItemName
+     * @param array $params
+     * @param boolean $allowedAccess
+     */
     protected function trace($item, $authItemName, $params, $allowedAccess) {
         $traceMessage = "Item {$item['label']} is " . ($allowedAccess ? '' : '*not* ') . "visible. ";
         $traceMessage.= "You have " . ($allowedAccess ? '' : 'no ') . "permissions to $authItemName with params:\n";
+
         foreach ($params as $name => $value)
             $traceMessage.="> $name=$value \n";
 
