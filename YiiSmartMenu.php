@@ -67,7 +67,9 @@ class YiiSmartMenu extends CMenu
     }
 
     /**
-     * Generate auth item name to be used in checkAccess() function.
+     * Generate auth item name to be used in checkAccess() function if "authItemName"
+     * is not defined in menu item.
+     *
      * The generated auth item name is formed using module name (whether any),
      * controller id and action id, all of them are extracted of 'url' or 'submit'
      * options of menu item. If there is no module in 'url'|'submit', just controller
