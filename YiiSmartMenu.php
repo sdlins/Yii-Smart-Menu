@@ -45,15 +45,7 @@ class YiiSmartMenu extends CMenu
         {
             if(!isset($item['visible']))
             {
-                /**
-                 * Generate auth item name if the option 'authItemName' of menu item
-                 * is not defined.
-                 */
-                if(!isset($item['authItemName']))
-                    $authItemName=$this->generateAuthItemNameFromItem($item);
-                else
-                    $authItemName=$item['authItemName'];
-
+                $authItemName=$this->generateAuthItemNameFromItem($item);
                 $params=$this->compoundParams($item);
 
                 $allowedAccess = Yii::app()->user->checkAccess($authItemName, $params);
@@ -89,52 +81,58 @@ class YiiSmartMenu extends CMenu
      * @return string The auth item name generated.
      */
     protected function generateAuthItemNameFromItem($item){
-        if(isset($item['url']) && is_array($item['url']))
-            $url=$item['url'];
-        elseif(isset($item['linkOptions']['submit']) && is_array($item['linkOptions']['submit']))
-            $url=$item['linkOptions']['submit'];
+        if(isset($item['authItemName']))
+            return $item['authItemName'];
         else
-            return $item['url'];
-
-        $templateParts=array();
-
-        $module = $this->getController()->getModule() ? ($this->getController()->getModule()->getId()) : false;
-        $controller = $this->getController()->id;
-        $authItemName = trim($url[0], '/');
-
-        if($this->upperCaseFirstLetter)
         {
-            $module = ucfirst($module);
-            $controller = ucfirst($controller);
-            $authItemName = ucfirst($authItemName);
-        }
+            if(isset($item['url']) && is_array($item['url']))
+                $url=$item['url'];
+            elseif(isset($item['linkOptions']['submit']) && is_array($item['linkOptions']['submit']))
+                $url=$item['linkOptions']['submit'];
+            else
+                return $item['url'];
 
-        if (strpos($authItemName, '/') !== false) {
-            $parts = explode('/', $authItemName);
+            $templateParts=array();
 
-            if($this->upperCaseFirstLetter){
-                foreach ($parts as $i => $part)
-                    $parts[$i] = ucfirst($part);
+            $module = $this->getController()->getModule() ? ($this->getController()->getModule()->getId()) : false;
+            $controller = $this->getController()->id;
+            $authItemName = trim($url[0], '/');
+
+            if($this->upperCaseFirstLetter)
+            {
+                $module = ucfirst($module);
+                $controller = ucfirst($controller);
+                $authItemName = ucfirst($authItemName);
             }
 
-            $numOfParts=count($parts);
-            if($numOfParts>2)
-                $templateParts['{module}']=$parts[$numOfParts-3];
+            if (strpos($authItemName, '/') !== false) {
+                $parts = explode('/', $authItemName);
 
-            $templateParts['{controller}']=$parts[$numOfParts-2];
-            $templateParts['{action}']=$parts[$numOfParts-1];
+                if($this->upperCaseFirstLetter){
+                    foreach ($parts as $i => $part)
+                        $parts[$i] = ucfirst($part);
+                }
+
+                $numOfParts=count($parts);
+                if($numOfParts>2)
+                    $templateParts['{module}']=$parts[$numOfParts-3];
+
+                $templateParts['{controller}']=$parts[$numOfParts-2];
+                $templateParts['{action}']=$parts[$numOfParts-1];
+            }
+            else
+            {
+                if($module)
+                    $templateParts['{module}']=$module;
+
+                $templateParts['{controller}']=$controller;
+                $templateParts['{action}']=$authItemName;
+            }
+
+            return implode($this->partItemSeparator, $templateParts);
         }
-        else
-        {
-            if($module)
-                $templateParts['{module}']=$module;
-
-            $templateParts['{controller}']=$controller;
-            $templateParts['{action}']=$authItemName;
-        }
-
-        return implode($this->partItemSeparator, $templateParts);
     }
+
 
     protected function compoundParams($item) {
         if (isset($item['authParams']))
