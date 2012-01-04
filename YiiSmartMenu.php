@@ -8,7 +8,7 @@ Yii::import('zii.widgets.CMenu');
  *
  * @author Sidney Lins <solucoes@wmaior.com>
  * @copyright Copyright &copy; 2011 Sidney Lins
- * @version 0.2.1
+ * @version 0.3.0
  * @license New BSD Licence
  */
 class YiiSmartMenu extends CMenu
