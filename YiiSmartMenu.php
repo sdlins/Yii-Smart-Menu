@@ -8,7 +8,7 @@ Yii::import('zii.widgets.CMenu');
  *
  * @author Sidney Lins <solucoes@wmaior.com>
  * @copyright Copyright &copy; 2011 Sidney Lins
- * @version 0.3.0
+ * @version 0.3.1
  * @license New BSD Licence
  */
 class YiiSmartMenu extends CMenu
@@ -48,7 +48,7 @@ class YiiSmartMenu extends CMenu
                 $authItemName=$this->generateAuthItemNameFromItem($item);
                 $params=$this->compoundParams($item);
 
-                $allowedAccess = Yii::app()->user->checkAccess($authItemName, $params);
+                $allowedAccess = $authItemName == '#' ? true : Yii::app()->user->checkAccess($authItemName, $params);
                 $item['visible'] = $allowedAccess;
 
                 $this->trace($item, $authItemName, $params, $allowedAccess);
