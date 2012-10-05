@@ -20,6 +20,8 @@ class YiiSmartMenu extends CMenu
      * @var string
      */
     public $partItemSeparator = ".";
+    public $smartParentVisibility = false;
+
     /**
      * Defines whether to capitalize the first letter of {module}, {controller}
      * and {authItemName} before to concat them. Defaults to true.
@@ -30,7 +32,7 @@ class YiiSmartMenu extends CMenu
 
     public function init() {
         $this->items = $this->filterItems($this->items);
-        return parent::init();
+        parent::init();
     }
 
     /**
@@ -40,7 +42,10 @@ class YiiSmartMenu extends CMenu
      * @param array $items The menu items being filtered.
      * @return array The menu items with visibility defined by checkAccess().
      */
-    protected function filterItems(array $items){
+    protected function filterItems(array $items, &$parent = null){
+        /**
+         * @var $user CWebUser
+         */
         foreach($items as $pos=>$item)
         {
             if(!isset($item['visible']))
@@ -48,8 +53,13 @@ class YiiSmartMenu extends CMenu
                 $authItemName=$this->generateAuthItemNameFromItem($item);
                 $params=$this->compoundParams($item);
 
-                $allowedAccess = $authItemName == '#' ? true : Yii::app()->user->checkAccess($authItemName, $params);
+                $allowedAccess = $authItemName == '#' ? !$this->smartParentVisibility : Yii::app()->user->checkAccess($authItemName, $params);
+
                 $item['visible'] = $allowedAccess;
+
+                if($allowedAccess && $this->smartParentVisibility && ($parent !== null && $parent['visible'] === false)) {
+                    $parent['visible'] = true;
+                }
 
                 $this->trace($item, $authItemName, $params, $allowedAccess);
             }
@@ -58,8 +68,9 @@ class YiiSmartMenu extends CMenu
              * If current item is visible and has sub items, loops recursively
              * on them.
              */
-            if(isset($item['items']) && $item['visible'])
-                $item['items']=$this->filterItems($item['items']);
+            if(isset($item['items']) && ($item['visible'] || $this->smartParentVisibility)) {
+                $item['items']=$this->filterItems($item['items'], $item);
+            }
 
             $items[$pos]=$item;
         }
