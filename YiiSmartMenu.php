@@ -42,7 +42,7 @@ class YiiSmartMenu extends CMenu
      * @param array $items The menu items being filtered.
      * @return array The menu items with visibility defined by checkAccess().
      */
-    protected function filterItems(array $items, &$parent = NULL){
+    protected function filterItems(array $items, &$parent = null){
         /**
          * @var $user CWebUser
          */
@@ -57,8 +57,8 @@ class YiiSmartMenu extends CMenu
 
                 $item['visible'] = $allowedAccess;
 
-                if($allowedAccess && $this->smartParentVisibility && ($parent !== NULL && $parent['visible'] === FALSE)) {
-                    $parent['visible'] = TRUE;
+                if($allowedAccess && $this->smartParentVisibility && ($parent !== null && $parent['visible'] === false)) {
+                    $parent['visible'] = true;
                 }
 
                 $this->trace($item, $authItemName, $params, $allowedAccess);
